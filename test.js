@@ -10,6 +10,7 @@ handle["/"] = requestHandlers.start;
 handle["/start"] = requestHandlers.start;
 handle["/upload"] = requestHandlers.upload;
 handle["/show"] = requestHandlers.show;
+handle["/file"] = requestHandlers.file;
 //handle.test = "test";
 
 server.startServer(router.route, handle);
