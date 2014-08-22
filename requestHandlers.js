@@ -46,6 +46,23 @@ function show(response) {
 
 function file(response){
 	console.log("Request handler 'file' was called.");
+		
+	var body = '<html>'+ '<head>'+ '<meta http-equiv="Content-Type" content="text/html; '+ 'charset=UTF-8" />'+
+	'</head>'+ '<body>'+
+	'<form name = "Property Address" action="/fileCreate" method="post">'+
+		'Street address: <input type="text" name ="StreetAddress">'+
+		'City: <input type="text" name ="City">'+
+		'<input type="submit" value="Submit address" />'+
+	'</form>'+ '</body>'+ '</html>';
+	response.writeHead(200, {"Content-Type": "text/html"});
+	response.write(body);
+	response.end();
+
+} //function file
+
+function fileCreate(response, postData){
+	console.log("Request handler 'fileCreate' was called.");
+	
 	console.log("OS type:" + os.type());
 	console.log("OS platoform:" + os.platform());
 	if (os.platform() === "win32"){	
@@ -57,30 +74,36 @@ function file(response){
 		});
 	}
 	if (os.platform() === "linux"){	
-		exec("ls -lah", function (error, stdout, stderr) {
+		var query = querystring.parse(postData);
+		var fileName = "";
+		for(var x in query){
+			var value = query[x].trim();
+			while(value.indexOf(" ") != -1)
+				value = value.replace(" ", "");
+			console.log("key:" + value);
+			fileName = fileName + value;
+		}
+		console.log("post Data:" + postData + " query:" + query + " fileName:" + fileName);
+		
+		fs.open("./" + fileName, "a+", function(err, fd){
+			  if (err) throw err;
+			  console.log('successfully created file: ' + postData);
+			  fs.close(fd);
+		});
+		exec("ls -la", function (error, stdout, stderr) {
 			response.writeHead(200, {"Content-Type": "text/plain"});
 			response.write(stdout);
 			response.write(stderr);
 			response.end();
+		    if (error !== null) {
+		        console.log('exec error: ' + error);
+		    };
 		});
-	}
-	
-/*	var spawn = require('child_process').spawn,
-    ls    = spawn('dir', ['-lh', '/usr']);
+	} //linux
 
-ls.stdout.on('data', function (data) {
-  console.log('stdout: ' + data);
-});
-
-ls.stderr.on('data', function (data) {
-  console.log('stderr: ' + data);
-});
-
-ls.on('close', function (code) {
-  console.log('child process exited with code ' + code);
-});*/
-}
+} //function file
 exports.start = start;
 exports.upload = upload;
 exports.show = show;
 exports.file = file;
+exports.fileCreate = fileCreate;
