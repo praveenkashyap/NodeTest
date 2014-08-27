@@ -28,13 +28,26 @@ function start(response, postData) {
 	response.write(body);
 	response.end();
 
+}function startSmall(response, postData) {
+	console.log("Request handler 'startSmall' was called.");
+
+	var body = '<html>'+ '<head>'+ '<meta http-equiv="Content-Type" content="text/html; '+ 'charset=UTF-8" />'+
+		'</head>'+ '<body>'+
+		'<form action="/upload" method="post">'+
+			'Number: <input type="text" name ="Number">'+
+			'<input type="submit" value="Submit number" />'+
+		'</form>'+ '</body>'+ '</html>';
+	response.writeHead(200, {"Content-Type": "text/html"});
+	response.write(body);
+	response.end();
+
 }
 
 function upload(response, postData) {
 	console.log("Request handler 'upload' was called.");
 	response.writeHead(200, {"Content-Type": "text/plain"});
-	response.write("You have sent the text: " + querystring.parse(postData).text);
-//	response.write("You have sent the text: "+ postData);
+	response.write("You have sent the text: " + querystring.parse(postData).text +"\n");
+	response.write("You have sent the post data: "+ postData);
 	response.end();
 }
 
@@ -48,12 +61,24 @@ function file(response){
 	console.log("Request handler 'file' was called.");
 		
 	var body = '<html>'+ '<head>'+ '<meta http-equiv="Content-Type" content="text/html; '+ 'charset=UTF-8" />'+
-	'</head>'+ '<body>'+
+	'</head>'+ '<body>'+ 
+	'<p> For rental property analysis, input the address and city </p>' + 
 	'<form name = "Property Address" action="/fileCreate" method="post">'+
 		'Street address: <input type="text" name ="StreetAddress">'+
 		'City: <input type="text" name ="City">'+
-		'<input type="submit" value="Submit address" />'+
-	'</form>'+ '</body>'+ '</html>';
+		'State: <input type="text" name ="State">'+
+		'<input type="submit" value="Submit address" /> <br>'+
+	'</form>'+ 
+	'<p> To create a template, enter state or neighborhood </p>' +
+	'<form name = "Neighborhood" action="/fileCreate" method="post">'+
+		'Neighborhood: <input type="text" name ="Neighborhood">'+
+		'<input type="submit" value="Submit Neighborhood" />'+
+	'</form>'+ 
+	'<form name = "State" action="/fileCreate" method="post">'+
+		'State: <input type="text" name ="State">'+
+		'<input type="submit" value="Submit State" />'+
+	'</form>'+ 
+	'</body>'+ '</html>';
 	response.writeHead(200, {"Content-Type": "text/html"});
 	response.write(body);
 	response.end();
@@ -102,8 +127,64 @@ function fileCreate(response, postData){
 	} //linux
 
 } //function file
+
+function ajaxRequest(response){
+	console.log("Request handler 'ajaxRequest' was called.");
+/*	var body = '<!DOCTYPE html> <html> <head>' + 
+		'<script>' + 
+		'function loadXMLDoc(){' +
+		'var xmlhttp;' +
+		'if (window.XMLHttpRequest)' +
+			'{// code for IE7+, Firefox, Chrome, Opera, Safari' +
+			'xmlhttp=new XMLHttpRequest();}' +
+	  	'xmlhttp.onreadystatechange=function(){' +
+			'if (xmlhttp.readyState==4 && xmlhttp.status==200){' + 
+				'document.getElementById("myDiv").innerHTML=xmlhttp.responseText;}' +
+				'} //function loadXMLDoc' +
+	  	'xmlhttp.open("GET","/ajaxResponse",true);' + 
+	  	'xmlhttp.send();' + 
+	'}' +
+	'</script>' +
+	'</head> <body>' +
+	'<div id="myDiv"><h2>Let AJAX change this text</h2></div>' +
+	'<button type="button" onclick="loadXMLDoc()">Change Content</button>' +
+	'</body> </html>';
+*/
+	var body = '<!DOCTYPE html> <html> <head> <meta http-equiv="Content-Type" content="text/html; '+ 'charset=UTF-8" />' + 
+	'<script>' + 
+	'function loadXMLDoc(){' +
+	'var xmlhttp;' +
+	'if (window.XMLHttpRequest){' +
+	  'xmlhttp=new XMLHttpRequest();}' +
+	'xmlhttp.onreadystatechange=function(){' +
+	  'if (xmlhttp.readyState==4 && xmlhttp.status==200){' +
+	    'document.getElementById("myDiv").innerHTML=xmlhttp.responseText;}};' +
+	'xmlhttp.open("GET","/ajaxResponse?gws_rd=ssl",true);' +
+	'xmlhttp.send();}' +
+	'</script>' +
+	'</head> <body>' +
+	'<div id="myDiv"><h2>Let AJAX change this text</h2></div>' +
+	'<button type="button" onclick="loadXMLDoc()">Change Content</button>' +
+	'</body> </html>';
+
+	response.writeHead(200, {"Content-Type": "text/html"});
+	response.write(body);
+	response.end();
+} //ajaxRequest
+
+function ajaxResponse(response, postData){
+	console.log("Request handler 'ajaxResponse' was called.");
+	response.writeHead(200, {"Content-Type": "text/plain"});
+	response.write("You have sent the post data: "+ postData);
+	response.end();
+	
+} //ajaxResponse
+
 exports.start = start;
+exports.startSmall = startSmall; 
 exports.upload = upload;
 exports.show = show;
 exports.file = file;
 exports.fileCreate = fileCreate;
+exports.ajaxRequest = ajaxRequest;
+exports.ajaxResponse = ajaxResponse;
